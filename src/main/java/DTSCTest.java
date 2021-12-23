@@ -21,25 +21,25 @@ import org.jfree.chart.ui.UIUtils;
 
 public class DTSCTest extends ApplicationFrame {
 
-    private static final String TITLE = "Dynamic Series";
+    private static final String TITLE = "Heart Rate";
     private static final String START = "Start";
     private static final String STOP = "Stop";
     private static final float MINMAX = 100;
     private static final int COUNT = 2 * 60;
     private static final int FAST = 100;
-    private static final int SLOW = FAST * 5;
-    private static final Random random = new Random();
+    private static final int SLOW = FAST * 5; // Do we want to include fast option?
+    private static final Random random = new Random(); //random number generator
     private final Timer timer;
 
-    public DTSCTest(final String title) {
-        super(title);
+    public DTSCTest(final String title) { //final means always referring to same object
+        super(title); //super :
         final DynamicTimeSeriesCollection dataset =
                 new DynamicTimeSeriesCollection(1, COUNT, new Second());
-        dataset.setTimeBase(new Second(0, 0, 0, 1, 1, 2011));
-        dataset.addSeries(gaussianData(), 0, "Gaussian data");
+        dataset.setTimeBase(new Second(0, 0, 0, 1, 1, 2022));
+        dataset.addSeries(gaussianData(), 0, "Heart rate");
         JFreeChart chart = createChart(dataset);
 
-        final JButton run = new JButton(STOP);
+        final JButton run = new JButton(STOP); //Do we want the stop option?
         run.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -84,7 +84,7 @@ public class DTSCTest extends ApplicationFrame {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                newData[0] = randomValue();
+                newData[0] = randomValue(); //here add DB
                 dataset.advanceTime();
                 dataset.appendData(newData);
             }
