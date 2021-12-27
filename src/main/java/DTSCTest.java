@@ -24,7 +24,7 @@ public class DTSCTest extends ApplicationFrame {
     private static final String TITLE = "Heart Rate";
     private static final String START = "Start";
     private static final String STOP = "Stop";
-    private static final float MINMAX = 100;
+    private static final float MAX = 150;
     private static final int COUNT = 2 * 60;
     private static final int FAST = 100;
     private static final int SLOW = FAST * 5; // Do we want to include fast option?
@@ -92,7 +92,7 @@ public class DTSCTest extends ApplicationFrame {
     }
 
     private float randomValue() {
-        return (float) (random.nextGaussian() * MINMAX / 3);
+        return (float) (random.nextGaussian() * MAX / 3);
     }
 
     private float[] gaussianData() {
@@ -110,7 +110,7 @@ public class DTSCTest extends ApplicationFrame {
         ValueAxis domain = plot.getDomainAxis();
         domain.setAutoRange(true);
         ValueAxis range = plot.getRangeAxis();
-        range.setRange(-MINMAX, MINMAX);
+        range.setRange(0, MAX);
         return result;
     }
 
