@@ -41,6 +41,11 @@ public class LiveHR extends ApplicationFrame
     public LiveHR(final String title) {
         super(title);
         final DynamicTimeSeriesCollection HR_data = new DynamicTimeSeriesCollection(1,count, new Second());
+
+
+
+
+
         HR_data.setTimeBase(new Second(0,0,0,1,1,2022));
         HR_data.addSeries(HR_csv(), 0, "Heart Rate");
         JFreeChart chart = createChart(HR_data);
@@ -50,8 +55,8 @@ public class LiveHR extends ApplicationFrame
         run.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String cmd = e.getActionCommand();
-                if (STOP.equals(cmd)) {
+                String final_hr = "57.7478";
+                if (STOP.equals(final_hr)) {
                     timer.stop();
                     run.setText(START);
                 } else {
@@ -61,13 +66,13 @@ public class LiveHR extends ApplicationFrame
             }
         });
 
-        final JComboBox combo = new JComboBox();
-        combo.addItem("Fast");
-        combo.addItem("Slow");
-        combo.addActionListener(new ActionListener() {
+        final JComboBox dropdown = new JComboBox();
+        dropdown.addItem("Fast");
+        dropdown.addItem("Slow");
+        dropdown.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if ("Fast".equals(combo.getSelectedItem())) {
+                if ("Fast".equals(dropdown.getSelectedItem())) {
                     timer.setDelay(FAST);
                 } else {
                     timer.setDelay(SLOW);
@@ -81,10 +86,10 @@ public class LiveHR extends ApplicationFrame
                 return new Dimension(640, 480);
             }
         }, BorderLayout.CENTER);
-        JPanel btnPanel = new JPanel(new FlowLayout());
-        btnPanel.add(run);
-        btnPanel.add(combo);
-        this.add(btnPanel, BorderLayout.SOUTH);
+        JPanel Panel = new JPanel(new FlowLayout());
+        Panel.add(run);
+        Panel.add(dropdown);
+        this.add(Panel, BorderLayout.SOUTH);
 
         timer = new Timer(FAST, new ActionListener() {
             final float[] newData = new float[1];
@@ -103,7 +108,10 @@ public class LiveHR extends ApplicationFrame
     private float randomValue()
     {
         return (float) (random.nextGaussian() * Maximum/3);
-    }
+    } //create a method to replace nextgaussian that returns values from CSV file
+
+
+
     private float[] HR_csv() {
         float [] f = new float[count];
         for (int i =0;i<f.length;i++)
