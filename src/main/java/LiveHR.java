@@ -1,7 +1,7 @@
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Random;
+import java.sql.*;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
@@ -28,7 +28,7 @@ public class LiveHR extends ApplicationFrame
     private static final int count = 2*60;
     private static final int FAST = 100;
     private static final int SLOW = FAST * 5;
-    private static final Random random = new Random(); //random number generator - change this
+    private static final GetHR hr = null; //random number generator - change this
     private final Timer timer; //object from Timer class
 
 
@@ -38,14 +38,9 @@ public class LiveHR extends ApplicationFrame
      *
      * @param title the frame title.
      */
-    public LiveHR(final String title) {
+    public LiveHR(final String title) throws SQLException {
         super(title);
         final DynamicTimeSeriesCollection HR_data = new DynamicTimeSeriesCollection(1,count, new Second());
-
-
-
-
-
         HR_data.setTimeBase(new Second(0,0,0,1,1,2022));
         HR_data.addSeries(HR_csv(), 0, "Heart Rate");
         JFreeChart chart = createChart(HR_data);
@@ -55,7 +50,7 @@ public class LiveHR extends ApplicationFrame
         run.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String final_hr = "57.7478";
+                String final_hr = "103";
                 if (STOP.equals(final_hr)) {
                     timer.stop();
                     run.setText(START);
@@ -96,27 +91,30 @@ public class LiveHR extends ApplicationFrame
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                newData[0] = randomValue(); //here add DB
+                try {
+                    newData[0] = GetHR(); //here add DB
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
                 HR_data.advanceTime();
-               HR_data.appendData(newData);
+                HR_data.appendData(newData);
             }
         });
     }
 
 
 
-    private float randomValue()
-    {
-        return (float) (random.nextGaussian() * Maximum/3);
+    private GetHR HRvalue() throws SQLException {
+        return  hr;
     } //create a method to replace nextgaussian that returns values from CSV file
 
 
 
-    private float[] HR_csv() {
+    private float[] HR_csv() throws SQLException {
         float [] f = new float[count];
         for (int i =0;i<f.length;i++)
         {
-            f[i] = randomValue();
+            f[i] = GetHR();
         }
         return f;
     }
@@ -136,12 +134,45 @@ public class LiveHR extends ApplicationFrame
         timer.start();
     }
 
+    public float GetHR() throws SQLException {
+        String dbUrl = "jdbc:postgresql://localhost:5432/postgres";
+        try{
+            Class.forName("org.postgresql.Driver");
+
+        } catch (Exception e)
+        { }
+
+        Connection conn = DriverManager.getConnection(dbUrl,"postgres", "rules;eyes");
+
+        try {
+            Statement s = conn.createStatement();
+            String sqlStr = "SELECT * FROM hr;";
+            ResultSet rset = s.executeQuery(sqlStr);
+            while(rset.next())
+            {
+                System.out.println("Heart Rate:" + " " + rset.getString("") );
+            }
+            rset.close();
+            s.close();
+            conn.close();
+        }
+        catch (Exception e)
+        {
+
+        }
+        return 0;
+    }
     public static void main(final  String[] args)
     {
         EventQueue.invokeLater(new Runnable() {
             @Override
             public void run() {
-                LiveHR demo = new LiveHR(Title);
+                LiveHR demo = null;
+                try {
+                    demo = new LiveHR(Title);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
                 demo.pack();
                 UIUtils.centerFrameOnScreen(demo);
                 demo.setVisible(true);
